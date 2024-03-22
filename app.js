@@ -45,6 +45,9 @@ app.get('/cars', async function(req, res) {
     const cars = await req.db.query(
       `SELECT * FROM car WHERE deleted_flag = 0`
     )
+
+    console.log('cars', cars);
+
   } catch (err) {
     console.log(err);
   }
@@ -57,23 +60,20 @@ app.use(async function(req, res, next) {
     await next();
 
   } catch (err) {
-
+    console.log(err)
   }
 });
 
 app.post('/car', async function(req, res) {
   try {
-    const { make, model, year } = req.body;
+    const { id, make, model, year } = req.body;
   
     const query = await req.db.query(
-      `INSERT INTO car (make, model, year) 
-       VALUES (:make, :model, :year)`,
-      {
-        make,
-        model,
-        year,
-      }
-    );
+      `INSERT INTO car (id, make, model, year, deleted_flag)
+       VALUES (:id, :make, :model, :year, :deleted_flag);`, { id, make, model, year, deleted_flag }); 
+       //VALUES (1, "Dodge", "Charger", 2024, 0);`);
+
+    console.log('query', query)
   
     res.json({ success: true, message: 'Car successfully created', data: null });
   } catch (err) {
